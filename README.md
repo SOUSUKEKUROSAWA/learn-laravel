@@ -68,7 +68,12 @@
 - コマンドを基本的に名前空間を持っている
   - `<parent command>:<child command>`
 # Generating login flow with make:auth
+- `php artisan make:auth`
+  - このコマンド一つで認証機能が設定される
 # Setting Up the Front End with Node and NPM
+- Laravelにはバックエンドの機能と同様にフロントエンドに関する機能も搭載している
+  - Bootstrap（TwitterBootstrap）とVue.jsがデフォルトで組み込まれている
+    - ただし，コンパイルを実行する必要はある
 # Migrations and Setting Up SQLite
 # Designing the UI from Instagram
 # Adding Username to the Registration Flow
