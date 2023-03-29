@@ -1,8 +1,72 @@
+# https://youtu.be/ImtZ5yENzgE
 # Introduction
-# What is Laravel?
+- https://www.instagram.com/freecodecamp/
+- インスタグラムクローン
+  - 投稿機能
+  - フォロー機能
+  - プロフィール編集機能
+    - 画像投稿機能
+    - 画像のリサイズ機能
+  - 認証機能
 # Installing Laravel
+- dockerを利用したLaravelの環境構築
+  - `Dockerfile`
+    - `apt-get`
+      - Ubuntuを含むDebianベースのLinuxディストリビューションで使用されるパッケージマネージャー
+        - OSのリポジトリからソフトウェアパッケージと依存関係をインストール、更新、および削除するために使用される
+      - `update`
+        - ローカルパッケージデータベースを最新バージョンに更新
+      - `install`
+        - ***必要な依存関係は全てDockerfileに記述しておくのがベストプラクティス***
+    - `apt-get install libzip-dev`
+      - Composerパッケージ管理などのさまざまな機能のためにLaravelで必要とされる、PHPでのZIPアーカイブのサポートを有効にするために必要
+        - これがないと，Composer を使用してパッケージをインストールまたは更新することができない
+    - `apt-get install libpng-dev`
+      - PHPでPNG画像ファイルのサポートを有効にするために必要
+        - 画像操作のためにLaravelのIntervention Imageライブラリで必要とされる
+          - これがないと，Intervention ImageはPNG画像を処理できない
+    - `apt-get install libfreetype6-dev`
+      - PHPでTrueTypeフォントのサポートを有効にするために必要   
+        - 画像操作のためにLaravelのIntervention Imageライブラリで必要とされる
+          - これがないと，Intervention Imageはフォントを処理できない
+    - `docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/`
+      - これがないとGDライブラリ（Intervention Image）が`libfreetype6-dev`および`libjpeg-dev`ライブラリを使用するように設定できなくなり，TrueTypeフォント，JPEGイメージの処理ができなくなる
+      - `--with-freetype-dir=/usr/include/`
+        - `libfreetype6-dev`ライブラリの場所を示す
+      - `--with-jpeg-dir=/usr/include/`
+        - `libjpeg-dev`ライブラリの場所を示す
+    - `docker-php-ext-install zip gd`
+      - Laravelおよびその依存関係で必要とされる重要なPHP拡張機能をインストールおよび有効化する
+        - `zip`
+          - PHPがZIPアーカイブと連携できるようにします。
+          - Composerに必要なやつ
+        - `gd`
+          - 画像の処理や操作に必要な関数をPHPに提供
+          - Intervention Imageなどのライブラリを使用する場合、特に画像を扱うためにLaravelで必要
+- 手順
+  - `docker-compose up -d`
+    - Laravelプロジェクトを作り直す場合
+      - `docker exec -it learn-laravel-app-1 bash`
+      - `composer create-project --prefer-dist laravel/laravel . "5.8.*"`
+        - `--prefer-dist`
+          - ComposerにLaravelパッケージの事前パッケージ化バージョンをダウンロードして使用するよう指示する
+            - 個々のファイルをすべてダウンロードするよりも高速である場合があるため
+      - `chown -R www-data:www-data /var/www/html/storage`
+        - `/var/www/html/storage`ディレクトリの所有権を通常`www-data`というApacheユーザーに変更
+          - アプリケーションは`/var/www/html/storage`ディレクトリに書き込むための権限を持つようになる
+            - `storage`ディレクトリ
+              - アプリケーションが操作中に読み書きする必要があるログ、キャッシュ、セッションデータなどの重要なファイルが含まれている
+                - セキュリティ上の理由から、これらのファイルにはアプリケーション自体のみがアクセスでき、サーバー上の他のユーザーやプロセスはアクセスできないことが重要
+  - http://localhost:8000/
 # First look at the project
-# Intro to php artisan
+- `composer.json`
+  - プロジェクトのアセット（プロジェクトに必要な情報）を保持するファイル
+  - composerはこのファイルをもとにパッケージのインストールと依存関係の解決を行う
+# Intro to `php artisan`
+- Thinkerというものを使用して，アプリケーション全体に様々なことを実行できるようにするCLI
+  - Laravelに同梱されている
+- コマンドを基本的に名前空間を持っている
+  - `<parent command>:<child command>`
 # Generating login flow with make:auth
 # Setting Up the Front End with Node and NPM
 # Migrations and Setting Up SQLite
@@ -35,3 +99,24 @@
 # Sending Emails to New Registered Users
 # Wrapping Up
 # Closing Remarks & What's Next In your Learning
+
+---
+
+# Command Tips
+- `php artisan key:generate`
+  -  Laravelアプリケーションの暗号化に使用されるアプリケーションキーを自動的に生成する
+    - アプリケーションでのセッション、トークン生成、パスワードリセットリンクの生成など、Laravel内の重要な暗号化タスクに使用される
+- `docker exec -it <container name> php artisan <additional command>`
+  - コンテナ外からワンライナーでコンテナ内に入り，`php artisan`系コマンドを実行する
+- `php artisan`
+  - このコマンドで使用できる追加コマンドの一覧が表示される
+- `ls -ld <directory path>`
+  - `/var/www/html/storage`ディレクトリの所有権を確認する
+    - その内容ではなくディレクトリ自体についての情報を表示するコマンド
+    - コマンドの出力
+      - ディレクトリの権限
+      - 所有者
+      - グループ所有者
+- `php artisan serve`
+  - 開発用サーバーを起動し，ローカルホストへ接続する
+    - ただし，Dockerにおける開発では，`docker-compose.yml`の設定により，コンテナが起動中は常にポートが公開されているため，このコマンドを実行しなくてもウェブページを表示できる
