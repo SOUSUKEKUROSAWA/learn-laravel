@@ -48,6 +48,10 @@
         - `npm`コマンドを使う
     - `# Install composer`
       - Laravel関連のパッケージマネージャ
+    - `# Change the Apache document root`
+      - DocumentRootを`/var/www/html/public`に変更することでLaravelがpublicディレクトリ内の`index.php`を読み込んでアプリケーションを動作させることができるようになる
+    - `# Enable URL rewriting, redirection etc.`
+      - Laravelのデフォルト画面以外を表示させる場合には、Apacheのrewriteモジュールを有効にする必要がある
 - 手順
   - `docker-compose up -d`
     - Laravelプロジェクトを作り直す場合
@@ -94,6 +98,13 @@
       - `src\resources\js\app.js`と`src\resources\sass\app.scss`はコンパイル前の実際に編集出来るファイル
 - `src\resources\views\home.blade.php`はログイン後に表示されるビュー
 # Migrations and Setting Up SQLite
+- マイグレーションファイル
+  - DBを作成するように指示するために必要な情報・命令の全てを保持したファイル
+  - これがあることによって，手動でDBを変更する必要がなく，チーム全員が同じ手順でDBをセットアップできる
+- SQLiteを利用
+  - 空の`src\database\database.sqlite`を作成
+  - `src\.env`ファイル内のDB関連の環境変数を変更
+- `php artisan migrate`
 # Designing the UI from Instagram
 # Adding Username to the Registration Flow
 # Creating the Profiles Controller
