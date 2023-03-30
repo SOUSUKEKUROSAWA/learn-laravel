@@ -109,7 +109,15 @@
 - SQLiteを利用
   - 空の`src\database\database.sqlite`を作成
   - `src\.env`ファイル内のDB関連の環境変数を変更
-- `php artisan migrate`
+- `php artisan migrate` 
+  - マイグレーションファイルをもとに，実際にDBが作成される
+- `src\config\database.php`
+  - DB設定ファイル
+***
+- `chown -R www-data:www-data /var/www/html/database`
+  - databaseディレクトの所有権の変更
+    - sqliteへのデータ登録の際，`src\database\database.sqlite`に書き込みを行うが，Webサーバ（Apache）はこのファイル自身だけでなく，親ディレクトリの`src\database`にも書き込み権限を持っている必要がある
+***
 # Designing the UI from Instagram
 # Adding Username to the Registration Flow
 # Creating the Profiles Controller
