@@ -26,7 +26,7 @@
         - 画像操作のためにLaravelのIntervention Imageライブラリで必要とされる
           - これがないと，Intervention ImageはPNG画像を処理できない
     - `apt-get install libfreetype6-dev`
-      - PHPでTrueTypeフォントのサポートを有効にするために必要   
+      - PHPでTrueTypeフォントのサポートを有効にするために必要  
         - 画像操作のためにLaravelのIntervention Imageライブラリで必要とされる
           - これがないと，Intervention Imageはフォントを処理できない
     - `docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/`
@@ -43,6 +43,11 @@
         - `gd`
           - 画像の処理や操作に必要な関数をPHPに提供
           - Intervention Imageなどのライブラリを使用する場合、特に画像を扱うためにLaravelで必要
+    - `# Install Node.js for npm`
+      - フロントエンド開発（JS）で必要
+        - `npm`コマンドを使う
+    - `# Install composer`
+      - Laravel関連のパッケージマネージャ
 - 手順
   - `docker-compose up -d`
     - Laravelプロジェクトを作り直す場合
@@ -74,6 +79,20 @@
 - Laravelにはバックエンドの機能と同様にフロントエンドに関する機能も搭載している
   - Bootstrap（TwitterBootstrap）とVue.jsがデフォルトで組み込まれている
     - ただし，コンパイルを実行する必要はある
+- 手順
+  - node.jsをインストールする
+    - バージョン18.xではエラーが発生した．
+      - ***バージョン14.xをインストールしたところエラーは発生しなくなった***
+  - `npm install`
+    - `package-lock.json`が作成される
+  - `npm run dev`
+    - コンパイルを行うコマンド
+      - Webpackを通じて行われる
+    - 何か問題が生じた場合
+      - `node_modules`ディレクトリを削除してもう一度やり直す
+    - これにより，`src\public\js\app.js`と`src\public\css\app.css`にコンパイルされたフロントエンドのコードが書き込まれる
+      - `src\resources\js\app.js`と`src\resources\sass\app.scss`はコンパイル前の実際に編集出来るファイル
+- `src\resources\views\home.blade.php`はログイン後に表示されるビュー
 # Migrations and Setting Up SQLite
 # Designing the UI from Instagram
 # Adding Username to the Registration Flow
@@ -116,7 +135,7 @@
 - `php artisan`
   - このコマンドで使用できる追加コマンドの一覧が表示される
 - `ls -ld <directory path>`
-  - `/var/www/html/storage`ディレクトリの所有権を確認する
+  - `<directory path>`ディレクトリの所有権を確認する
     - その内容ではなくディレクトリ自体についての情報を表示するコマンド
     - コマンドの出力
       - ディレクトリの権限
