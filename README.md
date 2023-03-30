@@ -1,6 +1,9 @@
 # https://youtu.be/ImtZ5yENzgE
 # Introduction
-- https://www.instagram.com/freecodecamp/
+- Goal
+  - https://www.instagram.com/freecodecamp/
+- GitHub
+  - https://github.com/coderstape/freeCodeGram
 - インスタグラムクローン
   - 投稿機能
   - フォロー機能
@@ -48,10 +51,46 @@
         - `npm`コマンドを使う
     - `# Install composer`
       - Laravel関連のパッケージマネージャ
-    - `# Change the Apache document root`
-      - DocumentRootを`/var/www/html/public`に変更することでLaravelがpublicディレクトリ内の`index.php`を読み込んでアプリケーションを動作させることができるようになる
-    - `# Enable URL rewriting, redirection etc.`
-      - Laravelのデフォルト画面以外を表示させる場合には、Apacheのrewriteモジュールを有効にする必要がある
+## `npm run dev`が正常に終了しない問題
+- 問題点
+  - `npm run dev`を実行すると以下のエラーが発生する
+```
+Error: error:0308010C:digital envelope routines::unsupported
+~~~
+```
+- 原因
+  - node.jsのバージョンとLaravelのバージョンの依存関係からくる問題だと思われる
+- 解決策
+  - バージョン14.xのnode.jsをインストールする
+## アプリケーションのフロントページが表示されない問題
+- 問題点
+  - Laravelプロジェクトは正常にインストールされたものの，`localhost:8000`にアクセスしても接続できない
+- 原因
+  - Webサーバ（Apache）のDocumentRootが`/var/www/html`になっており，`\var\www\html\public\index.php`を見つけられなかったから
+- 解決策
+  - `RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf`
+    - DocumentRootを`/var/www/html/public`に変更することでLaravelがpublicディレクトリ内の`index.php`を読み込んでアプリケーションを動作させることができるようになる
+## フロントページ表示時にエラーが発生する問題
+- 問題点
+  - フロントページへのGETリクエストを送ると以下のエラーが発生する
+```
+UnexpectedValueException
+The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened in append mode: failed to open stream: Permission denied The exception occurred while attempting to log: The stream or file file_put_contents(/var/www/html/storage/framework/views/d21bc1965d8c501e5e18921c4eb8ea6ec1e5686e.php): failed to open stream: Permission denied Context: {"exception":{}} Context: {"exception":{}} http://localhost:8000/
+```
+- 原因
+  - アプリケーションがストレージディレクトリに書き込む権限がないこと
+- 解決策
+  - `chown -R www-data:www-data /var/www/html/storage`
+    - storageディレクトリの所有権をアプリケーションユーザー（`www-data`）に変更する
+## フロントページ以外のページにアクセスできない問題
+- 問題点
+  - フロントページにはアクセスできるものの，その他のページにアクセスしようとしても404NotFoundエラーが発生してしまう
+- 原因
+  - Webサーバ（Apache）がデフォルト以外のページにアクセスできない設定になっていたから
+- 解決策
+  - `RUN a2enmod rewrite`
+    - Laravelのデフォルト画面以外を表示させる場合には、Apacheのrewriteモジュールを有効にする必要がある
+
 - 手順
   - `docker-compose up -d`
     - Laravelプロジェクトを作り直す場合
@@ -113,12 +152,30 @@
   - マイグレーションファイルをもとに，実際にDBが作成される
 - `src\config\database.php`
   - DB設定ファイル
-***
-- `chown -R www-data:www-data /var/www/html/database`
-  - databaseディレクトの所有権の変更
-    - sqliteへのデータ登録の際，`src\database\database.sqlite`に書き込みを行うが，Webサーバ（Apache）はこのファイル自身だけでなく，親ディレクトリの`src\database`にも書き込み権限を持っている必要がある
-***
+## ユーザー情報の登録のためのDB書き込みができない問題
+- 問題点
+  - registerページからユーザー情報を登録しようとすると以下のエラーが発生する
+```
+Illuminate \ Database \ QueryException (HY000)
+SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: insert into "users" ("name", "email", "password", "updated_at", "created_at") values (Test User, test@test.com, $2y$10$rG32NH8l0T7qaJzcRTMGE.X3vzv94BK8lOpfoT82ib71jD0SZ9e3W, 2023-03-30 04:42:15, 2023-03-30 04:42:15))
+```
+- 原因
+  - `database.sqlite`が存在する親ディレクトリである`database`ディレクトリに書き込み権限がないこと
+- 解決策
+  - `chown -R www-data:www-data /var/www/html/database`
+    - databaseディレクトの所有権の変更
+      - sqliteへのデータ登録の際，`src\database\database.sqlite`に書き込みを行うが，Webサーバ（Apache）はこのファイル自身だけでなく，親ディレクトリの`src\database`にも書き込み権限を持っている必要がある
 # Designing the UI from Instagram
+- `public`ディレクトリ
+  - Webサーバが最初にアクセスする場所
+    - 他のユーザーはサイトにアクセスしてもpublicディレクトリの中にしかいない
+      - アプリケーション上のpathは`~/public/`以降を記述すればよい
+- `col-$`クラス
+  - bootstrapでグリッドを使用して幅を指定する方法
+    - col-12の内，どのくらい幅を取るか選択することができる
+- inspect
+  - Webページの画像上で右クリックをして`inspect`をクリックするとそのページのHTML情報が表示される
+    - そこから画像のURLなどを取得することができる
 # Adding Username to the Registration Flow
 # Creating the Profiles Controller
 # RESTful Resource Controller
