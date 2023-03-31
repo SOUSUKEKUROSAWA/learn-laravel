@@ -201,6 +201,8 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
       - 悪意のあるユーザーがDBに配列データに紛れて不正なデータを送信するのを防ぐため
         - 配列にまとめて一気に登録する場合は常に`fillable`のチェックがかかる
 # Creating the Profiles Controller
+- ホームページはログインユーザーしか見れないようになっているが，本物のインスタグラムでは未ログインでも閲覧は可能になっている
+- `php artisan make:controller ProfileController`
 # RESTful Resource Controller
 # Passing Data to the View
 # Adding the Profiles Mode, Migration and Table
@@ -263,3 +265,5 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 - `Ctrl-c`+`Ctrl-v`（キーボードショートカット）
   - 選択範囲を指定しなくてもその行全体をコピーできる
   - 貼り付けも自動で一つ下の行に貼り付けされる
+- `php artisan help <command>`
+  - して下コマンドに関するヘルプを参照できる
