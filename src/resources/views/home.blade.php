@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-3 p-5">
-            <img src="svg\freeCodeCampLogo.svg" style="width: 150px;">
+            <img src="svg\freeCodeCampLogo.svg" class="rounded-circle" style="width: 100%;">
         </div>
         <div class="col-9 pt-5">
             <div>

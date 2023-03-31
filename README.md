@@ -177,6 +177,29 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
   - Webページの画像上で右クリックをして`inspect`をクリックするとそのページのHTML情報が表示される
     - そこから画像のURLなどを取得することができる
 # Adding Username to the Registration Flow
+- Controller
+  - データに対するアクションを実行する
+- Views
+  - 単にデータを正しく配置する
+- Tinker
+  - バックエンドを介してアプリケーションと対話できる
+## ControllerでもDBでもユニークバリデーションを行う理由
+- ControllerのユニークバリデーションはPHPレベルで行っており，DBに直接クエリが飛んできた場合を考えてDBでもユニークバリデーションを行っておく必要がある
+## マイグレーションファイルを変更したにもかかわらず，DBに変更が反映されない問題
+- 問題点
+  - マイグレーションファイルにて新たにカラムを追加し，アプリケーションを実行してDBへデータを登録したものの，追加したはずのカラムが追加できていなかった
+- 原因
+  - マイグレーションファイルを変更しただけで，DBは変更されていなかったから
+  - usernameをDBへ追加可能にするための設定を行っていなかったから（fillable担ていなかったから）
+- 解決策
+  - `php artisan migrate:fresh`
+    - このコマンドにより，実際にDBを再作成する
+      - 注意
+        - ***再作成（一度すべてのテーブルを削除）するため，もともとDBに入っていたデータは消えてしまう***
+  - 該当テーブルのモデルクラス内（`User.php`）の`$fillable`に該当カラム（`username`）を追加する
+    - なぜいちいち`$fillable`に追加しなくてはいけないのか
+      - 悪意のあるユーザーがDBに配列データに紛れて不正なデータを送信するのを防ぐため
+        - 配列にまとめて一気に登録する場合は常に`fillable`のチェックがかかる
 # Creating the Profiles Controller
 # RESTful Resource Controller
 # Passing Data to the View
@@ -225,3 +248,18 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 - `php artisan serve`
   - 開発用サーバーを起動し，ローカルホストへ接続する
     - ただし，Dockerにおける開発では，`docker-compose.yml`の設定により，コンテナが起動中は常にポートが公開されているため，このコマンドを実行しなくてもウェブページを表示できる
+- `chown -R <owner>:<group> <path>`
+  - 指定したパスにあるファイルまたはディレクトリの所有者及びグループを変更する
+    - パーミッションを直接変更するより安全に権限設定を行える
+- `chmod -R <permission> <path>`
+  - 指定したパスにあるファイルまたはディレクトリの権限を変更する
+- `Ctrl-d`（キーボードショートカット）
+  - 選択した文字列と一致する文字列を同時修正することができるコマンド
+    - `Ctrl-f`よりも素早く置換できる
+- `Ctrl-f`（キーボードショートカット）
+  - 文字列置換オプションを開く
+    - 選択範囲内限定での置換もできる
+      - `Ctrl-d`よりも確実に置換できる
+- `Ctrl-c`+`Ctrl-v`（キーボードショートカット）
+  - 選択範囲を指定しなくてもその行全体をコピーできる
+  - 貼り付けも自動で一つ下の行に貼り付けされる
