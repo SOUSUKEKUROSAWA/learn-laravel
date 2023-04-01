@@ -294,6 +294,20 @@ $user->profile->url = "freecodecamp.org";
 + $user->push();
 ```
 # Fetching the Record From The Database
+## 存在しないユーザーのプロフィール画面にアクセスすると，404エラーではなく，破壊的なエラーが発生してしまう問題
+- 問題点
+  - 404エラーではなく，以下のようなエラーが発生する
+```
+ErrorException (E_ERROR)
+Trying to get property 'username' of non-object (View: /var/www/html/resources/views/home.blade.php)
+```
+- 原因
+  - `User::find()`メソッドがエラーハンドリングを行っていなかったこと
+- 解決策
+```diff
+- $user = User::find($user);
++ $user = User::findOrFail($user);
+```
 # Adding Posts to the Database & Many To Many Relationship
 # Creating Through a Relationship
 # Uploading/Saving the Image to the Project
