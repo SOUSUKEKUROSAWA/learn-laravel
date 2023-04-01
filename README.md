@@ -232,7 +232,7 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 + <img src="\svg\freeCodeCampLogo.svg">
 ```
 # Adding the Profiles Mode, Migration and Table
-- `php artisan make:model`
+- `php artisan make:model Profile -m`
 - Eloquent
   - LaravelにおけるフレームワークのDB層の呼称
   - 裏側でクエリをフェッチ（呼び出す）する実装となる層
@@ -309,6 +309,93 @@ Trying to get property 'username' of non-object (View: /var/www/html/resources/v
 + $user = User::findOrFail($user);
 ```
 # Adding Posts to the Database & Many To Many Relationship
+- `php artisan make:model Post -m`
+- user情報が削除された場合，postsデータも同時に削除されるべき
+  - カスケード
+- form内の`enctype="multipart/form-data"`とは？
+  - `enctype="application/x-www-form-urlencoded"`に設定されている場合
+    - フォームフィールドからのデータは `"name=value&photo=value"`の形式でエンコードされ送信される
+      - シンプルなテキスト入力にはうまく機能するが、写真のようなバイナリデータを正しく送信することができない
+  - `enctype="multipart/form-data"`に設定されている場合
+    - データは別々の部分で送信され、写真ファイルは別のバイナリストリームとして送信される
+      - サーバーはデータを適切に処理し、写真が正しくアップロードされることが保証される
+      - ファイルなどは`Illuminate/Http/UploadedFile`クラスとしてリクエストに含まれる
+        - これにより，ファイルの保存・名前の変更・S3などへの配置
+```
+POST /upload HTTP/1.1
+Host: example.com
+Content-Type: multipart/form-data; boundary=---------------------------1234567890
+
+-----------------------------1234567890
+Content-Disposition: form-data; name="name"
+
+John Doe
+-----------------------------1234567890
+Content-Disposition: form-data; name="photo
+filename="myphoto.jpg"
+Content-Type: image/jpeg
+
+[バイナリデータ]
+-----------------------------1234567890--
+```
+- バリデーションルール
+  - https://laravel.com/docs/5.8/validation#available-validation-rules
+- `create`メソッド
+```diff
+$data = request()->validate([
+    "caption" => ["required"],
+    "image" => ["required", "image"],
+]);
+- $post = new \App\Post();
+- $post->caption = $data["caption"];
+- $post->save();
++ \App\Post::create($data);
+```
+## キャプションを投稿しようとすると`419 Page Expired`エラーが発生する問題
+- 問題点
+  - postsデータのcreate画面からフォーム送信後，`419 Page Expired`エラーが発生し，正常にデータを送信できていない
+- 原因
+  - CSRFの対策を行っていなかったこと
+    - CSRFエラー
+      - ウェブアプリケーションでは，実際にウェブサイトを経由しなくても，データを送信することができてしまう．
+        - そのため，エンドポイントに到達する権限を持つユーザーを制限する必要がある
+      - Laravelは各フォームに固有のトークンを追加し，それらを検証することができる
+        - リクエストの中に，もし，正しいトークンが含まれていればリクエストを受け付け，そうでなければ（トークンが正しくない，もしくはトークンがないならば），419エラーを吐く
+          - トークンは1つのフォームにつき1つ割り振られる
+            - リクエストごとに変化するわけではない
+- 解決策
+```diff
+<form action="/p" enctype="multipart/form-data" method="post">
++     @csrf
+~~~
+</form>
+```
+実際のページソースを見るとトークンが生成されているのが分かる
+```diff
+<form action="/p" enctype="multipart/form-data" method="post">
+-   @csrf
++   <input type="hidden" name="_token" value="llRSFvgZuY5l8lwiH5ZHt53gcS0S95eCt3b7sEeb">
+    ~~~
+</form>
+```
+## CaptionとImageを正しく入力して，フォームを送信してもエラーが発生してしまう問題
+- 問題点
+  - フォームを送信したところ以下のエラーが発生
+```
+Illuminate \ Database \ Eloquent \ MassAssignmentException
+Add [caption] to fillable property to allow mass assignment on [App\Post].
+```
+- 原因
+  - fillableの項目を設定していないから
+- 解決策
+```diff
+class Post extends Model
+{
++   protected $guarded = [];
+    ~~~
+}
+```
+今回の場合，リクエストを各カラムを名前指定したうえでバリデーションを行い，その後DBに保存している．そのため，fillableの制約を解除しても問題ない（空の配列にすることでLaravelに「何も保護しなくても問題ないです」と伝えている）
 # Creating Through a Relationship
 # Uploading/Saving the Image to the Project
 # Resizing Images with Intervention Image PHP Library
@@ -374,3 +461,5 @@ Trying to get property 'username' of non-object (View: /var/www/html/resources/v
   - 同時にそのモデル用のマイグレーションファイルも作成される
 - `A ?? B`
   - まずはA，AがなければBを表示する
+- `Ctrl-e`（キーボードショートカット）
+  - ファイル検索
