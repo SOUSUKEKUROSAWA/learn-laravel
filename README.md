@@ -217,6 +217,20 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 | DELETE    | `/photos/{photo}`       | destroy | photo.destroy |
 - この規則に従うことでコントローラは軽量になり，ETC（Easier To Change）になる
 # Passing Data to the View
+## コード修正後から画像が正しく表示されない問題
+- 問題点
+  - アプリケーションのフロントページのルーティングを`/home`から`/profiles/{user}`に変更したところ，それまで正常に表示されていた画像が表示されなくなった
+- 原因
+  - ルーティングの変更により，ビュー内の画像のURLも変更されていたこと
+    - Before
+      - http://127.0.0.1:8000/svg/freeCodeCampLogo.svg
+    - After
+      - http://127.0.0.1:8000/profiles/svg/freeCodeCampLogo.svg
+- 解決策
+```diff
+- <img src="svg\freeCodeCampLogo.svg">
++ <img src="\svg\freeCodeCampLogo.svg">
+```
 # Adding the Profiles Mode, Migration and Table
 # Adding Eloquent Relationships
 # Fetching the Record From The Database
