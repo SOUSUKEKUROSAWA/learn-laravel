@@ -246,6 +246,53 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
     - downメソッド
       - upメソッドで実行したことの逆を実行する
 # Adding Eloquent Relationships
+- tinkerを使って手動でデータを挿入する
+  - コード上に仮フォームを作る手間が省ける
+- リレーション先のデータへのアクセス
+  - `$profile->user;`
+    - 注意
+      - `$profile->user();`とすると親の`BelongsTo`メソッドへのアクセスになってしまう
+## モデルクラス内で他のモデルクラスを用いるときに`App\<model>`とする必要がない理由
+- すべてのモデルクラスの`namespace`は`App`であるため（つまり，同じ名前空間を共有しているため）
+## 親モデルからリレーション先の子モデルへのデータのsaveがDBに反映されない問題
+- 問題点
+```php
+$user = App\User::find(1);
+$user->profile->url = "freecodecamp.org";
+$user->save();
+$user->profile;
+=> App\Profile {#4042
+     id: "1",
+     user_id: "1",
+     title: "Cool Title",
+     description: "Description",
+     url: "freecodecamp.org", // saved?
+     created_at: "2023-04-01 06:17:00",
+     updated_at: "2023-04-01 06:17:00",
+   }
+// tinkerを再起動
+$user = App\User::find(1);
+$user->profile;
+=> App\Profile {#4292
+     id: "1",
+     user_id: "1",
+     title: "Cool Title",
+     description: "Description",
+     url: null, // but, not saved!
+     created_at: "2023-04-01 06:17:00",
+     updated_at: "2023-04-01 06:17:00",
+   }
+```
+- 原因
+  - 親モデルから`save`メソッドを実行しただけでは，子モデルのDBは変更されないこと
+- 解決策
+  - 親モデルで`push`メソッドを利用すると，再帰的に子モデルのDBも更新される
+```diff
+$user = App\User::find(1);
+$user->profile->url = "freecodecamp.org";
+- $user->save();
++ $user->push();
+```
 # Fetching the Record From The Database
 # Adding Posts to the Database & Many To Many Relationship
 # Creating Through a Relationship
@@ -311,3 +358,5 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 - `php artisan make:model <name> -m`
   - モデル名を指定してモデルクラスを作成する
   - 同時にそのモデル用のマイグレーションファイルも作成される
+- `A ?? B`
+  - まずはA，AがなければBを表示する
