@@ -204,6 +204,18 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 - ホームページはログインユーザーしか見れないようになっているが，本物のインスタグラムでは未ログインでも閲覧は可能になっている
 - `php artisan make:controller ProfileController`
 # RESTful Resource Controller
+- https://laravel.com/docs/5.8/controllers#resource-controllers
+
+| Verb      | Path                    |	Action  | Route Name    |
+| ---       | ---                     | ---     | ---           |
+| GET       |	`/photos`               | index   | photo.index   |
+| GET       |	`/photos/create`        |	create  | photo.create  |
+| POST      | `/photos`               |	store   | photo.store   |
+| GET       |	`/photos/{photo}`       | show	  | photo.show    |
+| GET       |	`/photos/{photo}/edit`  | edit    | photo.edit    |
+| PUT/PATCH |	`/photos/{photo}`       | update  | photo.update  |
+| DELETE    | `/photos/{photo}`       | destroy | photo.destroy |
+- この規則に従うことでコントローラは軽量になり，ETC（Easier To Change）になる
 # Passing Data to the View
 # Adding the Profiles Mode, Migration and Table
 # Adding Eloquent Relationships
@@ -267,3 +279,5 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
   - 貼り付けも自動で一つ下の行に貼り付けされる
 - `php artisan help <command>`
   - して下コマンドに関するヘルプを参照できる
+- `dd(<code>);`
+  - 引数に与えたコードを実行した結果を表示し，その時点で処理を一時停止する
