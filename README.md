@@ -232,6 +232,19 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 + <img src="\svg\freeCodeCampLogo.svg">
 ```
 # Adding the Profiles Mode, Migration and Table
+- `php artisan make:model`
+- Eloquent
+  - LaravelにおけるフレームワークのDB層の呼称
+  - 裏側でクエリをフェッチ（呼び出す）する実装となる層
+    - これにより，開発者はDBの種類に依存せずに開発を行える
+- profilesテーブルはusersテーブルと1対1の関係を持つ
+- マイグレーションファイル
+  - text型とstring型
+    - text型
+      - 改行を含むような長めの文字列
+  - upメソッドとdownメソッド
+    - downメソッド
+      - upメソッドで実行したことの逆を実行する
 # Adding Eloquent Relationships
 # Fetching the Record From The Database
 # Adding Posts to the Database & Many To Many Relationship
@@ -295,3 +308,6 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
   - して下コマンドに関するヘルプを参照できる
 - `dd(<code>);`
   - 引数に与えたコードを実行した結果を表示し，その時点で処理を一時停止する
+- `php artisan make:model <name> -m`
+  - モデル名を指定してモデルクラスを作成する
+  - 同時にそのモデル用のマイグレーションファイルも作成される
