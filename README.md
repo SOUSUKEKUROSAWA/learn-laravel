@@ -397,6 +397,53 @@ class Post extends Model
 ```
 今回の場合，リクエストを各カラムを名前指定したうえでバリデーションを行い，その後DBに保存している．そのため，fillableの制約を解除しても問題ない（空の配列にすることでLaravelに「何も保護しなくても問題ないです」と伝えている）
 # Creating Through a Relationship
+## CaptionとImageを正しく入力して，fillableをオフにして，フォームを送信してもエラーが発生してしまう問題
+- 問題点
+  - フォームを送信したところ以下のエラーが発生
+```
+Illuminate \ Database \ QueryException (23000)
+SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: posts.user_id (SQL: insert into "posts" ("caption", "image", "updated_at", "created_at") values (New Caption Here, /tmp/phpq2KgvD, 2023-04-01 13:38:57, 2023-04-01 13:38:57))
+```
+- 原因
+  - テーブルに必須の外部IDの情報をリクエストに含めていなかったこと
+- 解決策
+```diff
+public function store()
+{
+    ~~~
+-   \App\Post::create($data);
++   auth()->user()->posts()->create($data);
+}
+```
+これにより，
+- `auth()->user()`
+  - 認証されたユーザーを取得
+- `->posts()`
+  - そのユーザーのpostsデータにアクセス
+- `->create($data)`
+  - postデータを作成
+    - この際にLaravelが自動的にリレーションを解決し，そのpostデータに紐づくユーザーIDを追加してくれる
+
+投稿は他人のユーザーをもって行うことはできないため，この書き方でユーザーを識別できる
+## 派生：そもそも投稿画面や投稿リクエストを未ログインユーザーが行えてしまう問題
+- 問題点
+  - 最終的なDBの更新は行えないように設計できたものの，投稿画面へのアクセスや投稿リクエストは未ログインユーザーでもできてしまっていた
+- 原因
+  - これらの動作に対する認証が実装されていなかったから
+- 解決策
+```diff
+~~~
+class PostController extends Controller
+{
++   public function __construct()
++   {
++       $this->middleware("auth");
++   }
+    ~~~
+}
+```
+これにより，クラス内のメソッドを使う場合は，必ず認証されていなければいけなくなる
+模試認証されていなければ，自動的にログインページに遷移するようになる
 # Uploading/Saving the Image to the Project
 # Resizing Images with Intervention Image PHP Library
 # Route Model Binding
