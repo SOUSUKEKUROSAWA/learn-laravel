@@ -51,46 +51,6 @@
         - `npm`コマンドを使う
     - `# Install composer`
       - Laravel関連のパッケージマネージャ
-## `npm run dev`が正常に終了しない問題
-- 問題点
-  - `npm run dev`を実行すると以下のエラーが発生する
-```
-Error: error:0308010C:digital envelope routines::unsupported
-~~~
-```
-- 原因
-  - node.jsのバージョンとLaravelのバージョンの依存関係からくる問題だと思われる
-- 解決策
-  - バージョン14.xのnode.jsをインストールする
-## アプリケーションのフロントページが表示されない問題
-- 問題点
-  - Laravelプロジェクトは正常にインストールされたものの，`localhost:8000`にアクセスしても接続できない
-- 原因
-  - Webサーバ（Apache）のDocumentRootが`/var/www/html`になっており，`\var\www\html\public\index.php`を見つけられなかったから
-- 解決策
-  - `RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf`
-    - DocumentRootを`/var/www/html/public`に変更することでLaravelがpublicディレクトリ内の`index.php`を読み込んでアプリケーションを動作させることができるようになる
-## フロントページ表示時にエラーが発生する問題
-- 問題点
-  - フロントページへのGETリクエストを送ると以下のエラーが発生する
-```
-UnexpectedValueException
-The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened in append mode: failed to open stream: Permission denied The exception occurred while attempting to log: The stream or file file_put_contents(/var/www/html/storage/framework/views/d21bc1965d8c501e5e18921c4eb8ea6ec1e5686e.php): failed to open stream: Permission denied Context: {"exception":{}} Context: {"exception":{}} http://localhost:8000/
-```
-- 原因
-  - アプリケーションがストレージディレクトリに書き込む権限がないこと
-- 解決策
-  - `chown -R www-data:www-data /var/www/html/storage`
-    - storageディレクトリの所有権をアプリケーションユーザー（`www-data`）に変更する
-## フロントページ以外のページにアクセスできない問題
-- 問題点
-  - フロントページにはアクセスできるものの，その他のページにアクセスしようとしても404NotFoundエラーが発生してしまう
-- 原因
-  - Webサーバ（Apache）がデフォルト以外のページにアクセスできない設定になっていたから
-- 解決策
-  - `RUN a2enmod rewrite`
-    - Laravelのデフォルト画面以外を表示させる場合には、Apacheのrewriteモジュールを有効にする必要がある
-
 - 手順
   - `docker-compose up -d`
     - Laravelプロジェクトを作り直す場合
@@ -111,6 +71,45 @@ The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened 
         - 注意
           - パーミッションを誰でも書き込み可能に設定することはセキュリティ上のリスクになるため、通常はディレクトリの所有権を設定することが推奨されます。
   - http://localhost:8000/
+## `npm run dev`が正常に終了しない問題
+- 状況
+  - `npm run dev`を実行すると以下のエラーが発生する
+```
+Error: error:0308010C:digital envelope routines::unsupported
+~~~
+```
+- 原因
+  - node.jsのバージョンとLaravelのバージョンの依存関係からくる問題だと思われる
+- 解決策
+  - バージョン14.xのnode.jsをインストールする
+## アプリケーションのフロントページが表示されない問題
+- 状況
+  - Laravelプロジェクトは正常にインストールされたものの，`localhost:8000`にアクセスしても接続できない
+- 原因
+  - Webサーバ（Apache）のDocumentRootが`/var/www/html`になっており，`\var\www\html\public\index.php`を見つけられなかったから
+- 解決策
+  - `RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf`
+    - DocumentRootを`/var/www/html/public`に変更することでLaravelがpublicディレクトリ内の`index.php`を読み込んでアプリケーションを動作させることができるようになる
+## フロントページ表示時にエラーが発生する問題
+- 状況
+  - フロントページへのGETリクエストを送ると以下のエラーが発生する
+```
+UnexpectedValueException
+The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened in append mode: failed to open stream: Permission denied The exception occurred while attempting to log: The stream or file file_put_contents(/var/www/html/storage/framework/views/d21bc1965d8c501e5e18921c4eb8ea6ec1e5686e.php): failed to open stream: Permission denied Context: {"exception":{}} Context: {"exception":{}} http://localhost:8000/
+```
+- 原因
+  - アプリケーションがストレージディレクトリに書き込む権限がないこと
+- 解決策
+  - `chown -R www-data:www-data /var/www/html/storage`
+    - storageディレクトリの所有権をアプリケーションユーザー（`www-data`）に変更する
+## フロントページ以外のページにアクセスできない問題
+- 状況
+  - フロントページにはアクセスできるものの，その他のページにアクセスしようとしても404NotFoundエラーが発生してしまう
+- 原因
+  - Webサーバ（Apache）がデフォルト以外のページにアクセスできない設定になっていたから
+- 解決策
+  - `RUN a2enmod rewrite`
+    - Laravelのデフォルト画面以外を表示させる場合には、Apacheのrewriteモジュールを有効にする必要がある
 # First look at the project
 - `composer.json`
   - プロジェクトのアセット（プロジェクトに必要な情報）を保持するファイル
@@ -153,7 +152,7 @@ The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened 
 - `src\config\database.php`
   - DB設定ファイル
 ## ユーザー情報の登録のためのDB書き込みができない問題
-- 問題点
+- 状況
   - registerページからユーザー情報を登録しようとすると以下のエラーが発生する
 ```
 Illuminate \ Database \ QueryException (HY000)
@@ -186,7 +185,7 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 ## ControllerでもDBでもユニークバリデーションを行う理由
 - ControllerのユニークバリデーションはPHPレベルで行っており，DBに直接クエリが飛んできた場合を考えてDBでもユニークバリデーションを行っておく必要がある
 ## マイグレーションファイルを変更したにもかかわらず，DBに変更が反映されない問題
-- 問題点
+- 状況
   - マイグレーションファイルにて新たにカラムを追加し，アプリケーションを実行してDBへデータを登録したものの，追加したはずのカラムが追加できていなかった
 - 原因
   - マイグレーションファイルを変更しただけで，DBは変更されていなかったから
@@ -218,7 +217,7 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 - この規則に従うことでコントローラは軽量になり，ETC（Easier To Change）になる
 # Passing Data to the View
 ## コード修正後から画像が正しく表示されない問題
-- 問題点
+- 状況
   - アプリケーションのフロントページのルーティングを`/home`から`/profiles/{user}`に変更したところ，それまで正常に表示されていた画像が表示されなくなった
 - 原因
   - ルーティングの変更により，ビュー内の画像のURLも変更されていたこと
@@ -255,7 +254,7 @@ SQLSTATE[HY000]: General error: 8 attempt to write a readonly database (SQL: ins
 ## モデルクラス内で他のモデルクラスを用いるときに`App\<model>`とする必要がない理由
 - すべてのモデルクラスの`namespace`は`App`であるため（つまり，同じ名前空間を共有しているため）
 ## 親モデルからリレーション先の子モデルへのデータのsaveがDBに反映されない問題
-- 問題点
+- 状況
 ```php
 $user = App\User::find(1);
 $user->profile->url = "freecodecamp.org";
@@ -295,7 +294,7 @@ $user->profile->url = "freecodecamp.org";
 ```
 # Fetching the Record From The Database
 ## 存在しないユーザーのプロフィール画面にアクセスすると，404エラーではなく，破壊的なエラーが発生してしまう問題
-- 問題点
+- 状況
   - 404エラーではなく，以下のようなエラーが発生する
 ```
 ErrorException (E_ERROR)
@@ -320,7 +319,7 @@ Trying to get property 'username' of non-object (View: /var/www/html/resources/v
     - データは別々の部分で送信され、写真ファイルは別のバイナリストリームとして送信される
       - サーバーはデータを適切に処理し、写真が正しくアップロードされることが保証される
       - ファイルなどは`Illuminate/Http/UploadedFile`クラスとしてリクエストに含まれる
-        - これにより，ファイルの保存・名前の変更・S3などへの配置
+        - これにより，ファイルの保存・名前の変更・S3などへの配置が可能になる（後述）
 ```
 POST /upload HTTP/1.1
 Host: example.com
@@ -352,7 +351,7 @@ $data = request()->validate([
 + \App\Post::create($data);
 ```
 ## キャプションを投稿しようとすると`419 Page Expired`エラーが発生する問題
-- 問題点
+- 状況
   - postsデータのcreate画面からフォーム送信後，`419 Page Expired`エラーが発生し，正常にデータを送信できていない
 - 原因
   - CSRFの対策を行っていなかったこと
@@ -379,7 +378,7 @@ $data = request()->validate([
 </form>
 ```
 ## CaptionとImageを正しく入力して，フォームを送信してもエラーが発生してしまう問題
-- 問題点
+- 状況
   - フォームを送信したところ以下のエラーが発生
 ```
 Illuminate \ Database \ Eloquent \ MassAssignmentException
@@ -398,7 +397,7 @@ class Post extends Model
 今回の場合，リクエストを各カラムを名前指定したうえでバリデーションを行い，その後DBに保存している．そのため，fillableの制約を解除しても問題ない（空の配列にすることでLaravelに「何も保護しなくても問題ないです」と伝えている）
 # Creating Through a Relationship
 ## CaptionとImageを正しく入力して，fillableをオフにして，フォームを送信してもエラーが発生してしまう問題
-- 問題点
+- 状況
   - フォームを送信したところ以下のエラーが発生
 ```
 Illuminate \ Database \ QueryException (23000)
@@ -426,7 +425,7 @@ public function store()
 
 投稿は他人のユーザーをもって行うことはできないため，この書き方でユーザーを識別できる
 ## 派生：そもそも投稿画面や投稿リクエストを未ログインユーザーが行えてしまう問題
-- 問題点
+- 状況
   - 最終的なDBの更新は行えないように設計できたものの，投稿画面へのアクセスや投稿リクエストは未ログインユーザーでもできてしまっていた
 - 原因
   - これらの動作に対する認証が実装されていなかったから
@@ -445,6 +444,75 @@ class PostController extends Controller
 これにより，クラス内のメソッドを使う場合は，必ず認証されていなければいけなくなる
 模試認証されていなければ，自動的にログインページに遷移するようになる
 # Uploading/Saving the Image to the Project
+- `store`メソッド
+  - 第1引数
+    - 保存場所のパス
+      - `src\storage`配下の相対パスを指定
+  - 第2引数
+    - 保存に使用するドライバーを指定
+      - 様々なドライバーがある
+      - ローカルストレージは`public`ディレクトリを指定することになる
+  - これにより，`src\storage`配下は以下のような構造になる
+```
+C:~\src\storage
+├─app
+│  └─public
+│      └─uploads
+|          └─GKLS9T8rKVF1NwlqUYJGWmiAVZBx6s81JDWwtXH1.svg
+~~~
+
+```
+## 保存された画像にパスを用いてアクセスできない問題
+- 状況
+  - フォームから送信された画像データを`src\storage\app\public\uploads`ディレクトリに保存したものの，その画像のパスにGETリクエストを送っても画像にアクセスできない
+- 原因
+  - このディレクトリはstorageディレクトリの内側にあるため，ユーザーはアクセスできないこと
+- 解決策
+  - `php artisan storage:link`
+    - `public/storage`から`storage/app/public`へのシンボリックリンクを作成するコマンド
+      - 開発プロセスの中で一度だけ実行すればよい
+        - `<host url>/storage/<upload path>`で画像にアクセスできるようになる
+          - ***オリジナルのアップロードパスには`/storage/`の部分が含まれていないので，それはコントローラ内でコード上で追加する必要がある***
+        - 実際にpublicディレクトリ内にstorageディレクトリが作成されるわけではない
+## リダイレクト時点でエラーが発生する問題
+- 状況
+  - storeメソッド実行後，リダイレクト時にエラー発生
+    - リダイレクト先のコントローラ内メソッド実行前にエラーが発生している
+      - `return redirect("/profiles/1");`ではエラーは発生しないが，`return redirect("/profiles/" . auth()->user()->id());`ではエラーが発生する
+```php
+public function store()
+{
+    $data = request()->validate([
+        "caption" => ["required"],
+        "image" => ["required", "image"],
+    ]);
+
+    $imagePath = request("image")->store("uploads", "public");
+
+    // create data with user_id
+    auth()->user()->posts()->create([
+        "caption" => $data["caption"],
+        "image" => $imagePath,
+    ]);
+
+    return redirect("/profiles/" . auth()->user()->id());
+}
+```
+```
+UnexpectedValueException
+The stream or file "/var/www/html/storage/logs/laravel-2023-04-02.log" could not be opened in append mode: failed to open stream: Permission denied
+```
+- 原因
+  - スペルミス
+- 解決策
+```diff
+public function store()
+{
+    ~~~
+-   return redirect("/profiles/" . auth()->user()->id());
++   return redirect("/profiles/" . auth()->user()->id);
+}
+```
 # Resizing Images with Intervention Image PHP Library
 # Route Model Binding
 # Editing the Profile
@@ -510,3 +578,5 @@ class PostController extends Controller
   - まずはA，AがなければBを表示する
 - `Ctrl-e`（キーボードショートカット）
   - ファイル検索
+- `<model name>::truncate();`
+  - 指定したテーブル内のデータをすべて削除する
