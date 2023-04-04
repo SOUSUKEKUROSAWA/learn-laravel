@@ -518,11 +518,10 @@ public function store()
   - https://image.intervention.io/v2
 - Imageファサードを利用するために`use Intervention\Image\Facades\Image;`を追加する必要がある
   - 画像の絶対パスを与えて，それに対してメソッドを適用してリサイズしていく
-- ルートモデルバインディング
-  - `\App\Post $post`
-    - 自動でPostモデルでIDが`$post`と一致するリソースを取得し，`$post`に格納してくれる
-    - リソースが存在しない場合のエラーハンドリングも事前に実装されている
 # Route Model Binding
+- `\App\Post $post`
+  - 自動でPostモデルでIDが`$post`と一致するリソースを取得し，`$post`に格納してくれる
+  - リソースが存在しない場合のエラーハンドリングも事前に実装されている
 # Editing the Profile
 # Restricting/Authorizing Actions with a Model Policy
 # Editing the Profile Image
