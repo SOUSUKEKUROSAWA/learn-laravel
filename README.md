@@ -514,6 +514,14 @@ public function store()
 }
 ```
 # Resizing Images with Intervention Image PHP Library
+- `composer require intervention/image`
+  - https://image.intervention.io/v2
+- Imageファサードを利用するために`use Intervention\Image\Facades\Image;`を追加する必要がある
+  - 画像の絶対パスを与えて，それに対してメソッドを適用してリサイズしていく
+- ルートモデルバインディング
+  - `\App\Post $post`
+    - 自動でPostモデルでIDが`$post`と一致するリソースを取得し，`$post`に格納してくれる
+    - リソースが存在しない場合のエラーハンドリングも事前に実装されている
 # Route Model Binding
 # Editing the Profile
 # Restricting/Authorizing Actions with a Model Policy
@@ -580,3 +588,5 @@ public function store()
   - ファイル検索
 - `<model name>::truncate();`
   - 指定したテーブル内のデータをすべて削除する
+- `compact("<name>",...)`
+  - `<name>`という名前で`$<name>`変数をviewに渡す
