@@ -548,6 +548,25 @@ public function update(User $user)
     }
 ```
 # Restricting/Authorizing Actions with a Model Policy
+- 上記の問題について，コントローラで認証チェックをするだけでは不十分で，そもそも見ろグイユーザーにEdit Profileの動線が見えてもいけない
+  - これを実現するために「ポリシー」を使用する
+- `php artisan make:policy ProfilePolicy -m Profile`
+  - ポリシークラスを新規作成する
+- Poricyクラスメソッド
+  - 引数
+    - 認証されたユーザークラスのインスタンス
+    - 元となるモデルクラスのインスタンス
+  - 返り値
+    - `true/false`
+      - そのメソッドを実行できるユーザーの条件を記述する
+- `$this->authorized("<action>", <model class instance>)`と記述することでメソッドを実行する権限をチェックする
+  - ただ，これだけだと，未ログインユーザーに「Edit Profile」ボタンが見えたまま
+  - viewの`can`ディレクティブを利用してボタンを表示するための条件を追加する
+- ここまでの施策によって，未ログインユーザーは
+  - Edit Profileボタンが見えない
+  - Editページにアクセスできない
+  - 更新処理が行えない
+    - また，ログインしていたとしても他のユーザーのプロフィール編集の動線にはアクセスできない
 # Editing the Profile Image
 # Automatically Creating A Profile Using Model Events
 # Default Profile Image
