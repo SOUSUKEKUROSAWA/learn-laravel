@@ -523,6 +523,30 @@ public function store()
   - 自動でPostモデルでIDが`$post`と一致するリソースを取得し，`$post`に格納してくれる
   - リソースが存在しない場合のエラーハンドリングも事前に実装されている
 # Editing the Profile
+- アプリケーションの特定の部分へのアクセスを制限する方法
+## 未ログインユーザーでもプロフィールを修正することができてしまう問題
+- 状況
+  - 未ログイン状態でプロフィール画面にアクセスしても，プロフィール編集の画面へのアクセスおよびプロフィール編集ができてしまう
+- 原因
+  - ユーザーのログインチェックを行っていないから
+- 解決策
+  - ルートモデルバインディングによって，渡されたユーザーデータを信用しないことによる保護
+```diff
+public function update(User $user)
+    {
+        $data = request()->validate([
+            "title" => "required",
+            "description" => "required",
+            "url" => "url",
+            "image" => "",
+        ]);
+
+-       $user->profile->update($data);
++       auth()->user()->profile->update($data);
+
+        return redirect("/profiles/{$user->id}");
+    }
+```
 # Restricting/Authorizing Actions with a Model Policy
 # Editing the Profile Image
 # Automatically Creating A Profile Using Model Events
