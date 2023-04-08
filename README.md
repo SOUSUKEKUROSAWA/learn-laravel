@@ -575,6 +575,18 @@ public function update(User $user)
 - `array_merge(<target array>, <merging array>)`
   - `<merging array>`で指定した`<target array>`のキーの値を更新することができる
 # Automatically Creating A Profile Using Model Events
+- ユーザ登録した際に，プロフィールは作成されない
+  - ユーザ登録と同時に空白のプロフィールを作成した方がいい
+- モデルイベントを利用する
+  - https://laravel.com/docs/5.8/eloquent#events
+- `boot()`
+  - 親モデルが起動する度に呼び出される
+  - `created`
+    - 親モデルのインスタンス作成後に毎回呼び出される
+      - `creating`との違い
+        - 親モデルのインスタンス作成前に毎回呼び出される
+      - クロージャ
+        - 作成されたモデルが実際に提供されるという特徴がある
 # Default Profile Image
 # Follow/Unfollow Profiles Using a Vue.js Component
 # Many To Many Relationship

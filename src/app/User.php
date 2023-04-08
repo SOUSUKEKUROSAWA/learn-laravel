@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Foundation\Bootstrap\BootProviders;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -36,6 +37,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected static function boot () {
+        parent::boot();
+
+        static::created(function ($user) {
+            $user->profile()->create([
+                "title" => $user->username,
+            ]);
+        });
+    }
 
     public function profile ()
     {
