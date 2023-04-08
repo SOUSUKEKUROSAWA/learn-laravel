@@ -11,6 +11,10 @@
     - 画像投稿機能
     - 画像のリサイズ機能
   - 認証機能
+- StartUp
+  - `cd C:\Users\kuros\Documents\learn-laravel`
+  - `docker-compose up -d`
+  - http://127.0.0.1:8000/
 # Installing Laravel
 - dockerを利用したLaravelの環境構築
   - `Dockerfile`
@@ -568,6 +572,8 @@ public function update(User $user)
   - 更新処理が行えない
     - また，ログインしていたとしても他のユーザーのプロフィール編集の動線にはアクセスできない
 # Editing the Profile Image
+- `array_merge(<target array>, <merging array>)`
+  - `<merging array>`で指定した`<target array>`のキーの値を更新することができる
 # Automatically Creating A Profile Using Model Events
 # Default Profile Image
 # Follow/Unfollow Profiles Using a Vue.js Component
