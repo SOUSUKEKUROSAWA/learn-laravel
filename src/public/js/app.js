@@ -1912,15 +1912,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["userId"],
+  props: ["userId", "follows"],
   mounted: function mounted() {
     console.log('Component mounted.');
   },
+  data: function data() {
+    return {
+      status: this.follows
+    };
+  },
   methods: {
     followUser: function followUser() {
+      var _this = this;
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/follows/" + this.userId).then(function (response) {
-        alert(response.data);
+        _this.status = !_this.status;
+        console.log(response.data);
+      })["catch"](function (errors) {
+        if (errors.response.status == 401) {
+          window.location = "/login";
+        }
       });
+    }
+  },
+  computed: {
+    buttonText: function buttonText() {
+      return this.status ? "Unfollow" : "Follow";
     }
   }
 });
@@ -1943,10 +1959,13 @@ var render = function render() {
     _c = _vm._self._c;
   return _c("div", [_c("button", {
     staticClass: "btn btn-primary ml-4",
+    domProps: {
+      textContent: _vm._s(_vm.buttonText)
+    },
     on: {
       click: _vm.followUser
     }
-  }, [_vm._v("Follow")])]);
+  })]);
 };
 var staticRenderFns = [];
 render._withStripped = true;

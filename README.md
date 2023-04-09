@@ -724,6 +724,23 @@ Have any questions about the report message? You can see how it is composed by i
 - 参考
   - https://stackoverflow.com/questions/44127688/difference-between-npm-run-watch-and-npm-run-watch-poll
 # Many To Many Relationship
+- プロフィールは多くのユーザーにフォローされる可能性があり，ユーザーは多くのプロフィールをフォローすることができる
+- `php artisan make:migration create_profile_user_table --create profile_user`
+  - ピボットテーブルの命名規則
+    - 接続する2つのテーブル名をアルファベット順に並べる
+    - すべて小文字・単数形にする
+    - 2つのテーブル名の間に`_`を追加する
+- `toggle(<column name>)`
+  - 指定したBoolean型カラムの値を反転させる
+  - `auth()->user()->following()->toggle($user->profile);`の場合
+    - `auth()->user()->following()`
+      - 認証ユーザとプロフィール間の多対多の関係を表す`belongsToMany`コレクションオブジェクトが返される
+    - `->toggle($user->profile)`
+      - プロフィールがフォローされていない場合`false`は認証されたユーザーのフォロー一覧にプロフィールを追加`true`
+      - すでにフォローされている場合`true`は一覧から削除`false`
+- followしているのかしていないのかをユーザーに明示的に示す
+  - デフォルトをどのように規定するのか
+    - そのユーザーがフォローしているプロフィールの中に，アクセス先のプロフィールと同じものがあるかどうかのチェック結果を`true/false`で渡す
 # Calculating Followers Count and Following Count
 # Laravel Telescope
 # Showing Posts from Profiles The User Is Following
