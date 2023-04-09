@@ -588,6 +588,52 @@ public function update(User $user)
       - クロージャ
         - 作成されたモデルが実際に提供されるという特徴がある
 # Default Profile Image
+- ユーザ登録時に空のプロフィールが自動作成されるが，画像はエラー表示になってしまう
+  - デフォルトの画像を設定しておいた方がユーザにとってわかりやすい
+    - https://www.shoshinsha-design.com/2020/05/%E3%83%8E%E3%83%BC%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%82%A2%E3%82%A4%E3%82%B3%E3%83%B3-%E3%83%94%E3%82%AF%E3%83%88-no-image-icon-2/.html
+## プロフィール編集時画像をアップロードせずに更新するとエラーが発生する問題
+- 状況
+  - ログイン
+  - プロフィール編集
+  - 画像を選択せずに更新
+  - 以下のエラーが発生
+```
+ErrorException (E_NOTICE)
+Undefined variable: imagePath
+```
+- 原因
+  - リクエストには常に画像がセットされているという間違った前提に基づいて処理を実装していたこと
+- 解決策
+```diff
+public function update(User $user)
+{
+    $this->authorize("update", $user->profile);
+
+    $data = request()->validate([
+        "title" => "required",
+        "description" => "required",
+        "url" => "url",
+        "image" => "",
+    ]);
+
+    if (request("image")) {
+        $imagePath = request("image")->store("profile", "public");
+
+        $image = Image::make(public_path("storage/{$imagePath}"))->fit(1000, 1000);
+        $image->save();
+
++       $imageArray = ["image" => $imagePath];
+    }
+
+    auth()->user()->profile->update(array_merge(
+        $data,
+-       ["image" => $imagePath]
++       $imageArray ?? [] // 画像がセットされていない場合はなにもマージされない
+    ));
+
+    return redirect("/profiles/{$user->id}");
+}
+```
 # Follow/Unfollow Profiles Using a Vue.js Component
 # Many To Many Relationship
 # Calculating Followers Count and Following Count
