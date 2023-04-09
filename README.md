@@ -635,6 +635,94 @@ public function update(User $user)
 }
 ```
 # Follow/Unfollow Profiles Using a Vue.js Component
+- フォローボタンを押したときにページ全体をリロードしない方がいい
+  - Vue.jsを用いる
+- `src\resources\js\app.js`にてコンポーネントの名前とパスを定義している
+- vueの注意点
+  - HTMLタグは並列に配置できない
+    - 必ず１つのルートタグが必要
+- followボタンクリック時のアクション
+  - axiosライブラリを利用する
+    - API呼び出しが非常に簡単になる
+    - Laravelにはデフォルトで用意されている
+  - 実装方法
+    - ボタンクリック時に実行するメソッドをボタンタグ内に記述
+    - そのメソッド内でaxiosを用いてpostリクエストを送信
+    - 受け取ったリクエストをもとにDBへデータ登録
+    - 受け取ったレスポンスをもとに再レンダリング
+- propsの受け渡し
+  - HTMLタグを通して，VueコンポーネントにProosを渡せる
+## `npm run watch`を実行するとエラーが発生する問題
+- 状況
+  - `src\resources\js\components\FollowButton.vue`を編集
+  - `npm run watch`
+  - 以下のエラーが発生
+```
+FollowButton.vue Doctor
+❗ Incorrect Target
+Target version mismatch. You can specify the target version in vueCompilerOptions.target in tsconfig.json / jsconfig.json. (Expected "target": 2.7)
+
+vue version: 2.7.14
+tsconfig target: 3 (default)
+vue: c:\Users\kuros\Documents\learn-laravel\src\node_modules\vue\package.json
+tsconfig: Not found
+vueCompilerOptions:
+{
+  "extensions": [
+    ".vue"
+  ]
+}
+Have any questions about the report message? You can see how it is composed by inspecting the source code.
+```
+- 原因
+  - vueのバージョンと`vueCompilerOptions.target`のバージョンに互換性がなかったこと
+  - ブラウザ及びアプリケーションに過去のキャッシュが残ってしまっていたこと
+- 解決策
+  - 下記のような`jsconfig.json`をルートディレクトリに作成する
+  - `npm run watch`
+  - `php artisan cache:clear`及びブラウザのキャッシュクリア
+    - ブラウザのキャッシュクリア方法（Google Chromeの場合）
+      - ブラウザを開きます。
+      - 右上の三つの点が並んでいるアイコンをクリックします。
+      - 「その他のツール」を選択し、「クリアブラウジングデータ」を選択します。
+      - クリアする項目と期間を選択し、「データを消去」をクリックします。
+`jsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "vueCompilerOptions": {
+      "target": 2.7
+  }
+}
+```
+## `npm run watch`を実行しても自動コンパイルが行われない問題
+- 状況
+  - vueファイルを変更
+  - `npm run watch`
+  - vueファイルを変更
+  - 保存
+  - 自動コンパイルが行われず
+- 原因
+  - `watch`コマンドが常に動作しているわけではなかったこと
+- 解決策
+  - `npm run watch-poll`
+    - 強制的に一定間隔（例：1000ms）でファイルが変更されたかどうかをチェックするようになる
+- 参考
+  - https://stackoverflow.com/questions/44127688/difference-between-npm-run-watch-and-npm-run-watch-poll
 # Many To Many Relationship
 # Calculating Followers Count and Following Count
 # Laravel Telescope
@@ -696,3 +784,12 @@ public function update(User $user)
   - 指定したテーブル内のデータをすべて削除する
 - `compact("<name>",...)`
   - `<name>`という名前で`$<name>`変数をviewに渡す
+- `npm run watch`
+  - プロジェクト内で一度だけ実行すれば，その後はすべてのファイルを監視し，変化がある度にすべてのコードが再コンパイルされ，ブラウザに表示される
+    - 開発中に使用する物
+- `npm install`
+  - `package.json`に従ってパッケージをインストールする
+    - `node_modules`ディレクトリなどバージョン管理していないディレクトリの変更をUndoすることもできる
+      - `package.json`（バージョン管理されている）のバージョンをもとに戻す
+      - `node_modules`ディレクトリを削除
+      - `npm install`
