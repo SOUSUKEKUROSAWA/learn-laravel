@@ -742,6 +742,13 @@ Have any questions about the report message? You can see how it is composed by i
   - デフォルトをどのように規定するのか
     - そのユーザーがフォローしているプロフィールの中に，アクセス先のプロフィールと同じものがあるかどうかのチェック結果を`true/false`で渡す
 # Laravel Telescope
+- https://laravel.com/docs/5.8/telescope
+  - laravelのデバッグアシスタント
+    - アプリケーションに直接接続できる非常に完全なツールセット
+- http://127.0.0.1:8000/telescope
+  - Queries
+    - クエリのログ
+    - 一つ一つのクエリの詳細も確認できる
 # Showing Posts from Profiles The User Is Following
 # Pagination with Eloquent
 # N + 1 Problem & Solution
