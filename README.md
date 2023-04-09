@@ -741,7 +741,6 @@ Have any questions about the report message? You can see how it is composed by i
 - followしているのかしていないのかをユーザーに明示的に示す
   - デフォルトをどのように規定するのか
     - そのユーザーがフォローしているプロフィールの中に，アクセス先のプロフィールと同じものがあるかどうかのチェック結果を`true/false`で渡す
-# Calculating Followers Count and Following Count
 # Laravel Telescope
 # Showing Posts from Profiles The User Is Following
 # Pagination with Eloquent
