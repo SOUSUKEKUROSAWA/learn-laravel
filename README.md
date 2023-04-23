@@ -763,7 +763,6 @@ Have any questions about the report message? You can see how it is composed by i
   - Dockerfileに`RUN docker-php-ext-install opcache`及び`COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini`を追加
   - `docker compose up -d --build`
   - ただ，これでもだいぶ遅いので，他にも原因がありそう
-# N + 1 Problem & Solution
 # Make Use of Cache for Expensive Query
 # Sending Emails to New Registered Users
 # Wrapping Up
