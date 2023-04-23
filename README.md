@@ -552,7 +552,7 @@ public function update(User $user)
     }
 ```
 # Restricting/Authorizing Actions with a Model Policy
-- 上記の問題について，コントローラで認証チェックをするだけでは不十分で，そもそも見ろグイユーザーにEdit Profileの動線が見えてもいけない
+- 上記の問題について，コントローラで認証チェックをするだけでは不十分で，そもそも未ログインユーザーにEdit Profileの動線が見えてもいけない
   - これを実現するために「ポリシー」を使用する
 - `php artisan make:policy ProfilePolicy -m Profile`
   - ポリシークラスを新規作成する
@@ -772,6 +772,22 @@ Have any questions about the report message? You can see how it is composed by i
     - 1日や1ヶ月と指定することもできる
   - キャッシュする処理（クロージャ）
 # Sending Emails to New Registered Users
+- ユーザー作成時にプロフィールを自動作成したのと同じやり方を使う -> # Automatically Creating A Profile Using Model Events
+- [mailtrap.io](https://mailtrap.io/)
+  - 開発中のメール送信に使える，仮想の受信トレイ
+    - MAIL_USERNAMEとMAIL_PASSWORDをenvファイルにコピーする
+- `php artisan make:mail NewUserWelcomeMail -m email.welcome-email`
+  - `php artisan make:mail <mail name> -m <directory path to store email>`
+  - appディレクトリ内にMailディレクトリが新たに作成される
+  - viewsディレクトリ内にemail.welcome-emailが新たに作成される
+## .envファイルの変更が反映されない問題
+- 状況
+  - .envファイルを変更し，保存したのにもかかわらず，変更が反映されない
+  - ただし，Dockerコンテナの場合はこの問題は発生しない
+- 原因
+  - php artisan serveを実行している間は.envファイルは読み込まれない
+- 解決策
+  - サーバを再起動する
 # Wrapping Up
 # Closing Remarks & What's Next In your Learning
 
