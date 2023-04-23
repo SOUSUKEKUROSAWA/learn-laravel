@@ -11,11 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
+
+Route::get('/', 'PostController@index');
 
 Route::get('/profiles/{user}', 'ProfileController@show')->name('profile.show');
 Route::get('/profiles/{user}/edit', 'ProfileController@edit')->name('profile.edit');

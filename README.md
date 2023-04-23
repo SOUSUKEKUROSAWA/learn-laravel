@@ -750,6 +750,19 @@ Have any questions about the report message? You can see how it is composed by i
     - クエリのログ
     - 一つ一つのクエリの詳細も確認できる
 # Showing Posts from Profiles The User Is Following
+- インスタグラムでは，ログイン後，フォローしているユーザの投稿が新しい順で見れるようになっている
+- `pluck("<column name>")`
+  - コレクションインスタンスから特定のカラムだけ抽出した配列を新たに作成する
+## アプリ全体の実行速度が非常に遅い問題
+- 状況
+  - ページ遷移に非常に長い時間がかかっていた．dockerが使えるリソースを増やしても改善しなかった．また，Laravel以外のアプリ（Djangoアプリなど）では，通常の速度でページ遷移出来ていたので，何か設定に問題があるようだったが，原因が分からづにいた．
+- 原因
+  - OPcacheが有効になっていなかったこと
+- 解決策
+  - opcache.iniの作成
+  - Dockerfileに`RUN docker-php-ext-install opcache`及び`COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini`を追加
+  - `docker compose up -d --build`
+  - ただ，これでもだいぶ遅いので，他にも原因がありそう
 # Pagination with Eloquent
 # N + 1 Problem & Solution
 # Make Use of Cache for Expensive Query
@@ -816,3 +829,5 @@ Have any questions about the report message? You can see how it is composed by i
       - `package.json`（バージョン管理されている）のバージョンをもとに戻す
       - `node_modules`ディレクトリを削除
       - `npm install`
+- `latest()`
+  - =`orderBy("created_at", "desc")`

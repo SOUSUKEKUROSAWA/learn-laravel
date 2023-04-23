@@ -11,7 +11,12 @@ RUN apt-get update && apt-get install -y \
         libjpeg-dev \
         libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install zip gd
+    && docker-php-ext-install zip gd \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install opcache
+
+# Copy OPcache configuration
+COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Install Node.js and npm
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
