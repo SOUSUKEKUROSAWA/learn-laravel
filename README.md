@@ -764,6 +764,13 @@ Have any questions about the report message? You can see how it is composed by i
   - `docker compose up -d --build`
   - ただ，これでもだいぶ遅いので，他にも原因がありそう
 # Make Use of Cache for Expensive Query
+- プロフィールの投稿数やフォロー・フォロワー数は毎回計算するのではなく，30秒間はキャッシュされた値を表示するようにする
+  - パフォーマンスが向上する
+- キャッシュに必要なもの
+  - 保持しておくキャッシュを判別するための一意のキー
+  - キャッシュの保持時間
+    - 1日や1ヶ月と指定することもできる
+  - キャッシュする処理（クロージャ）
 # Sending Emails to New Registered Users
 # Wrapping Up
 # Closing Remarks & What's Next In your Learning
