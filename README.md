@@ -788,8 +788,6 @@ Have any questions about the report message? You can see how it is composed by i
   - php artisan serveを実行している間は.envファイルは読み込まれない
 - 解決策
   - サーバを再起動する
-# Wrapping Up
-# Closing Remarks & What's Next In your Learning
 
 ---
 
